@@ -6,7 +6,7 @@ Based on: http://avitevet.blogspot.com.es/2013/01/shelving-emberjs-was-authoriza
 
 ## Note
 
-Work in progress... please help improved it!
+Work in progress... please help improve it!
 
 ## Installation
 
@@ -36,9 +36,11 @@ App.Routes.ApiUrl = {
 };
 ```
 
-## Auth lib integrations
+## Rails Authentication lib integrations
 
 See http://railscasts.com/episodes/352-securing-an-api?view=asciicast
+
+Would also be nice to have support for: https://github.com/heartsentwined/ember-auth-rails
 
 ## Sorcery access token
 
