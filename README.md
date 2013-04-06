@@ -36,9 +36,15 @@ App.Routes.ApiUrl = {
 };
 ```
 
-## Rails Authentication lib integrations
+## Securing an Api
 
-See http://railscasts.com/episodes/352-securing-an-api?view=asciicast
+See See http://railscasts.com/episodes/352-securing-an-api?view=asciicast
+
+and http://railscasts.com/episodes/353-oauth-with-doorkeeper
+
+Would be nice to get some basic templates in this project that uses some of these approaches.
+
+## Rails Authentication lib integrations
 
 Would also be nice to have support for: https://github.com/heartsentwined/ember-auth-rails
 
