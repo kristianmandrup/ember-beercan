@@ -6,11 +6,11 @@ Based on: http://avitevet.blogspot.com.es/2013/01/shelving-emberjs-was-authoriza
 
 And http://livsey.org/blog/2012/10/16/writing-a-helper-to-check-permissions-in-ember-dot-js/
 
-We should also include stuff from here: http://livsey.org/blog/2012/02/23/should-your-user-care-about-authentication/
+Also includes from here: http://livsey.org/blog/2012/02/23/should-your-user-care-about-authentication/
 
 ## Note
 
-Work in progress... please help improve it!
+This gem is a work in progress... please help improve it!
 
 ## Installation
 
@@ -40,10 +40,41 @@ App.Routes.ApiUrl = {
 };
 ```
 
+## Ember Auth toolset
+
+Simply add the following to your script manifest.
+
+```coffeescript
+#= require beercan
+```
+
+Or alternatively include individual "modules"
+
+```coffeescript
+#= require beercan/authorization
+```
+
+Add permissions:
+
+```javascript
+App.Permissions.register("createPost", App.Permission.extend({
+  can: function() {
+    return this.get("currentUser.isAdmin");
+  }.property("currentUser.isAdmin")
+}));
+
+App.Permissions.register("editPost", App.Permission.extend({
+  can: function(){
+    return this.get("currentUser.isAdmin") || this.get("content.author.id") == this.get("currentUser.id");
+  }.property("currentUser.isAdmin", "content")
+}));
+```
+
 ## Controllers
 
-* AuthorizationsController
-* TokensController
+* AuthorizationsController (subclass to have your control authorization enabled)
+* TokensController (for managing auth tokens)
+* GuardedController
 
 ### Doorkeeper
 
