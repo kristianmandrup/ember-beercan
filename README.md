@@ -36,6 +36,41 @@ App.Routes.ApiUrl = {
 };
 ```
 
+## Controllers
+
+* AuthorizationsController
+* TokensController
+
+### Doorkeeper
+
+Use doorkeeper to setup your API with OAuth protection :)
+
+BeerCan comes with a `GuardedController` you can subclass.
+
+First install doorkeeper:
+
+    $ rails generate doorkeeper:install
+
+Config example (orm):
+
+```ruby
+# initializers/doorkeeper.rb
+Doorkeeper.configure do
+  orm :mongoid2 # or :mongoid3, :mongo_mapper
+
+  # et resource owner, typically a User
+  resource_owner_authenticator do
+    User.find(session[:current_user_id]) || redirect_to(login_url)
+  end  
+end
+```
+
+For mongoid, make sure to create indexes!
+
+    $ rake db:mongoid:create_indexes
+
+See [wiki](https://github.com/applicake/doorkeeper/wiki) for more option and info 
+
 ## Securing an Api
 
 See See http://railscasts.com/episodes/352-securing-an-api?view=asciicast
