@@ -4,6 +4,10 @@ Authorization for Ember with Rails.
 
 Based on: http://avitevet.blogspot.com.es/2013/01/shelving-emberjs-was-authorization-in.html
 
+And http://livsey.org/blog/2012/10/16/writing-a-helper-to-check-permissions-in-ember-dot-js/
+
+We should also include stuff from here: http://livsey.org/blog/2012/02/23/should-your-user-care-about-authentication/
+
 ## Note
 
 Work in progress... please help improve it!
@@ -24,7 +28,7 @@ Or install it yourself as:
 
 ## Usage
 
-Add an ApiUrl hash with some Rails authorization info stored:
+Add an `ApiUrl` hash with some Rails authorization info stored:
 
 ```erb
 # routes/api_url.js.coffee.erb
