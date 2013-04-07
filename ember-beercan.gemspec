@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Ember::Beercan::VERSION
   spec.authors       = ["Kristian Mandrup"]
   spec.email         = ["kmandrup@gmail.com"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
+  spec.description   = %q{Add Authentication and Authorization to your Ember app using auth tokens. Includes server side controller code for Rails 3.1+}
+  spec.summary       = %q{Authentication and Authorization helpers for Ember (and Rails)}
   spec.homepage      = ""
   spec.license       = "MIT"
 
