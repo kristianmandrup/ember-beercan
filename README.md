@@ -1,12 +1,15 @@
 # Ember::Beercan
 
-Authorization for Ember with Rails.
+Authentication and Authorization tooling for Ember with Rails.
 
-Based on: http://avitevet.blogspot.com.es/2013/01/shelving-emberjs-was-authorization-in.html
+Based on code found in: 
+* [ember-rails-devise-token-authentication](http://avitevet.blogspot.com.es/2012/11/ember-rails-devise-token-authentication.html)
+* [shelving-emberjs-was-authorization-in](http://avitevet.blogspot.com.es/2013/01/shelving-emberjs-was-authorization-in.html)
+* [writing-a-helper-to-check-permissions-in-ember](http://livsey.org/blog/2012/10/16/writing-a-helper-to-check-permissions-in-ember-dot-js/)
 
-And http://livsey.org/blog/2012/10/16/writing-a-helper-to-check-permissions-in-ember-dot-js/
+This gem includes both coffeescript assets and Rails controller code to get you started ;)
 
-Also includes from here: http://livsey.org/blog/2012/02/23/should-your-user-care-about-authentication/
+The Rails controller code depends on the [cancan](https://github.com/ryanb/cancan) and [rails-api](https://github.com/rails-api/rails-api) gems.
 
 ## Note
 
@@ -70,11 +73,44 @@ App.Permissions.register("editPost", App.Permission.extend({
 }));
 ```
 
+You must also have a currentUser at `App.currentUser` for permissions to work.
+
+See [writing-a-helper-to-check-permissions-in-ember](http://livsey.org/blog/2012/10/16/writing-a-helper-to-check-permissions-in-ember-dot-js/) for more instructions.
+
 ## Controllers
 
 * AuthorizationsController (subclass to have your control authorization enabled)
 * TokensController (for managing auth tokens)
 * GuardedController
+
+
+The `TokensController` uses a `Tokener`. Currently only a `DeviseTokener` is included. 
+You can implement this simple interface for whichever Auth framework you are using.
+
+```ruby
+class DeviseTokener
+  attr_reader :user
+
+  def initialize user
+    @user = user
+  end
+
+  def token    
+    user.authentication_token
+  end
+
+  def reset_token
+    user.reset_authentication_token!
+  end
+
+  # http://rdoc.info/github/plataformatec/devise/master/Devise/Models/TokenAuthenticatable
+  def authenticate_token
+    user.ensure_authentication_token!
+  end
+end
+```
+
+Note: The [sorcery](https://github.com/kristianmandrup/sorcery) in my repo, provides an Auth token module you can use as an alternative to Devise. See [access_token](https://github.com/fzagarzazu/sorcery/commits/access_token)
 
 ### Doorkeeper
 
@@ -86,7 +122,7 @@ First install doorkeeper:
 
     $ rails generate doorkeeper:install
 
-Config example (orm):
+Config example (mongoid):
 
 ```ruby
 # initializers/doorkeeper.rb
@@ -108,23 +144,11 @@ See [wiki](https://github.com/applicake/doorkeeper/wiki) for more option and inf
 
 ## Securing an Api
 
-See See http://railscasts.com/episodes/352-securing-an-api?view=asciicast
+See [railscast: securing an api](http://railscasts.com/episodes/352-securing-an-api?view=asciicast) for a walk-through of what is required...
 
-and http://railscasts.com/episodes/353-oauth-with-doorkeeper
-
-Would be nice to get some basic templates in this project that uses some of these approaches.
-
-## Rails Authentication lib integrations
+## Authentication lib integrations
 
 Would also be nice to have support for: https://github.com/heartsentwined/ember-auth-rails
-
-## Sorcery access token
-
-https://github.com/NoamB/sorcery/issues/70
-
-Please see: https://github.com/fzagarzazu/sorcery/commits/access_token
-
-Help bring it into Sorcery gem :)
 
 ## Rails assets config
 

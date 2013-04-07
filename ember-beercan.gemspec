@@ -21,6 +21,9 @@ Gem::Specification.new do |spec|
   spec.add_dependency             'rails',      '>= 3.2.8'
   spec.add_dependency             'doorkeeper', '~> 0.6.7'
 
+  spec.add_dependency             'cancan',     '~> 1.6'
+  spec.add_dependency             'rails-api',  '~> 0.1.0'
+
   spec.add_development_dependency "bundler",    "~> 1.3"
   spec.add_development_dependency "rake"
 end

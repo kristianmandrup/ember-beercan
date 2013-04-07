@@ -1,4 +1,3 @@
 #= require beercan/authorization
 #= require beercan/authentication
-
-# ... more
+#= require beercan/helpers

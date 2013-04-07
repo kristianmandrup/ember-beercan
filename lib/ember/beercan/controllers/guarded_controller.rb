@@ -1,4 +1,4 @@
-class GuardedBaseController < EmberController
+class GuardedBaseController < APIController
   doorkeeper_for :all, :if => lambda { request.xhr? }
   
   private

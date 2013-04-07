@@ -1,16 +1,31 @@
-class AuthorizationsController < EmberController
-  def show
-    
-    object = cName.capitalize.constantize
-    
-    object = object.find(id) unless id.blank?
-    
-    authorized = can? action, object
-    
-    render json: {status: (authorized ? 200 : 401)}
+class AuthorizationsController < APIController
+  def show      
+    render json: {status: status}
   end
 
   protected
+
+  def status
+    authorized ? 200 : 401
+  end
+
+  def authorized
+    can? action, object
+  end
+
+  def cancan?
+    unless self.respond_to? :can?
+      raise "You must have a can? method available in this controller ('cancan' gem)."
+    end
+  end      
+
+  def clazz 
+    @clazz = cName.capitalize.constantize
+  end
+
+  def object
+    clazz.find(id) unless id.blank?
+  end
 
   def cName
     params[:cName]

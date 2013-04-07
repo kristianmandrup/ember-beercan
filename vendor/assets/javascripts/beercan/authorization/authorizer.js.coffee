@@ -1,35 +1,51 @@
 App.Authorization.Authorizer = Ember.Object.extend
-  action: ''
-  object: null
+  action:   ''
+  object:   null
   response: 401
-  urlBase: ApiUrl.authorization_path
+  urlBase:  ApiUrl.authorization_path
 
-  can : (-> 
-      return (this.get('response') == 200)
+  can: (-> 
+    @allowed 
   ).property('response')
 
-  authorize: ->
-    # if object is an instance, include the id in the query params
-    # otherwise, just include the class name
-    obj = this.get('object')
-    cName = obj.toString()
-    id = null
-    if Ember.typeOf(obj) == "instance"
-      # cname looks something like "<namespace.name:embernumber>"
-      # turn it into "name"
-      cName = cName.split(':')[0].split('.')[1]
-      id = obj.get('id')
-
+  authorize: ->        
     $.ajax 
-       url : "#{this.get('urlBase')}.json"
-       context : this
-       type : 'GET'
-       data : 
-          action : this.get('action')
-          cName : cName
-          id : id
+      url:      @url
+      context:  @
+      type:     'GET'
+      data: 
+        id:     @id
+        action: @get 'action'
+        cName:  @cName
 
-       complete : (data, textStatus, xhr) ->
-          this.set('response', data.status)
+      complete : (data, textStatus, xhr) ->
+        set_allowed data
 
-    return this.get('can')
+    @get 'can'
+
+  set_allowed: (data) ->
+    @set 'response', data.status
+
+  allowed: ->
+    @get('response') == 200
+
+  url: ->
+    "#{@get('urlBase')}.json"
+
+  obj: ->
+    @get 'object'
+
+  id: ->
+    @obj.get 'id'      
+
+  # if object is an instance, include the id in the query params
+  # otherwise, just include the class name
+  cName: -> 
+    return @cname if @cname
+    name = @obj.toString()
+    # cname looks something like "<namespace.name:embernumber>"
+    # turn it into "name"
+    @cname = Ember.typeOf(obj) == "instance" ? @normalize(name) : name
+
+  normalize: (name) ->
+    name.split(':')[0].split('.')[1]
