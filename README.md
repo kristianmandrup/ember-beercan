@@ -84,33 +84,45 @@ See [writing-a-helper-to-check-permissions-in-ember](http://livsey.org/blog/2012
 * GuardedController
 
 
-The `TokensController` uses a `Tokener`. Currently only a `DeviseTokener` is included. 
-You can implement this simple interface for whichever Auth framework you are using.
+The `TokensController` uses a `Tokener`. Currently tokeners are provided for Sorcery and Devise:
+* `SorceryTokener`
+* `DeviseTokener`
+
+You can implement this simple interface for whichever Auth token solution you are using.
 
 ```ruby
-class DeviseTokener
-  attr_reader :user
+class SorceryTokener
+  attr_reader :user, :controller
 
-  def initialize user
+  def initialize user, controller = nil
     @user = user
+    @controller = controller
   end
 
   def token    
-    user.authentication_token
+    user.token
   end
 
   def reset_token
-    user.reset_authentication_token!
+    controller.destroy_access_token
   end
-
-  # http://rdoc.info/github/plataformatec/devise/master/Devise/Models/TokenAuthenticatable
+  
   def authenticate_token
-    user.ensure_authentication_token!
+    # should fire after_login hook, which performs token authentication
+    controller.login_from_access_token
   end
 end
 ```
 
-Note: The [sorcery](https://github.com/kristianmandrup/sorcery) in my repo, provides an Auth token module you can use as an alternative to Devise. See [access_token](https://github.com/fzagarzazu/sorcery/commits/access_token)
+Note: This version of the [sorcery](https://github.com/kristianmandrup/sorcery) gem, provides an `AccessToken` module you can use as an alternative to Devise. See [access_token](https://github.com/fzagarzazu/sorcery/commits/access_token)
+
+To select a tokener, you can use the `tokener_for` macro, which expects a tokener class of the form `<name>Tokener`
+
+```ruby
+class TokensController < APIController
+  tokener_for :sorcery
+end
+```
 
 ### Doorkeeper
 
@@ -141,6 +153,8 @@ For mongoid, make sure to create indexes!
     $ rake db:mongoid:create_indexes
 
 See [wiki](https://github.com/applicake/doorkeeper/wiki) for more option and info 
+
+Currently, the BeerCan coffeescript auth modules are not setup to use the `GuardedController`.Please help out implementing this integration ;)
 
 ## Securing an Api
 

@@ -1,6 +1,6 @@
 require "ember/beercan/version"
 
-require "ember/beercan/devise_tokener"
+require "ember/beercan/tokeners"
 require "ember/beercan/controllers"
 
 module Ember

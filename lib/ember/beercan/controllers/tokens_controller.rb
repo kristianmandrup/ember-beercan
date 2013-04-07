@@ -29,6 +29,19 @@ class TokensController < APIController
     render_msg 404, invalid_token_msg
   end
 
+  def self.tokener_for name
+    define_method :tokener_class
+      "#{name.to_s.camelize}Tokener".constantize
+    end
+
+    define_method :tokener do
+      @tokener ||= tokener_class.new user, self
+    end
+
+    hide_action :tokener
+    hide_action :tokener_class
+  end
+
   protected
 
   def retrieve_user
@@ -64,7 +77,7 @@ class TokensController < APIController
   end
 
   def tokener
-    @tokener ||= DeviseTokener.new user
+    @tokener ||= DeviseTokener.new user, self
   end
 
   def validate_password!    
