@@ -257,13 +257,13 @@ https://gist.github.com/ivanvanderbyl/4560416
 
 ```ruby
 class ApplicationController < ActionController::Base
-   helper_method :current_permission_json
+  helper_method :current_permission_json
 
-   delegate :can_update, :can_delete, :can_manage, to: :current_permission
+  delegate :can_update, :can_delete, :can_manage, to: :current_permission
 
-   def current_permission_json
-       UserSerializer.new([can_update, can_delete, can_manage], :scope => current_user.role, :root => false).to_json
-   end
+  def current_permission_json
+     UserSerializer.new([can_update, can_delete, can_manage], :scope => current_user.role, :root => false).to_json
+  end
 end
 
 class UserSerializer < ActiveModel::Serializer
