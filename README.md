@@ -7,6 +7,8 @@ Based on code found in:
 * [shelving-emberjs-was-authorization-in](http://avitevet.blogspot.com.es/2013/01/shelving-emberjs-was-authorization-in.html)
 * [writing-a-helper-to-check-permissions-in-ember](http://livsey.org/blog/2012/10/16/writing-a-helper-to-check-permissions-in-ember-dot-js/)
 
+And a few other places (see below)
+
 This gem includes both coffeescript assets and Rails controller code to get you started ;)
 
 The Rails controller code depends on the [cancan](https://github.com/ryanb/cancan) and [rails-api](https://github.com/rails-api/rails-api) gems.
@@ -14,6 +16,8 @@ The Rails controller code depends on the [cancan](https://github.com/ryanb/canca
 ## Note
 
 This gem is a work in progress... please help improve it!
+
+Also help improve the README and usage instructions.
 
 ## Installation
 
@@ -88,7 +92,7 @@ There are also some nice ideas presented in this [gist](https://gist.github.com/
 
 You must have a `currentUser` on the controller for permissions to work.
 For this a `App.CurrentUserController` is included. On this controller you can set the `currentUserPath` property to the path of your server API that returns the current user.
-It might be useful to return a Guest user, in case no user is logged in.
+It might be useful to return a `Guest` user, in case no user is logged in.
 
 A `CurrentUserController` with `currentUser` functionality, is made available in all controllers using the `Ember.Application.initializer`, named 'currentUser'.
 
@@ -109,6 +113,8 @@ end
 ```
 
 ### App.Authentication.UserSession
+
+Simple sign in/out
 
 * signedIn (is the user signed in?)
 * signIn
@@ -132,8 +138,8 @@ This can be used for simple (old school) email/password login. The server should
 
 `App.Routes.SigninMatcher.map(match)` can be used to add signin routes:
 
-* match('/signIn').to('userSessionNew')
-* match('/users/:user_id').to('user')
+* `match('/signIn').to('userSessionNew')`
+* `match('/users/:user_id').to('user')`
 
 ## Controllers
 
@@ -250,7 +256,6 @@ http://guides.rubyonrails.org/asset_pipeline.html
 For faster asset precompiles, you can partially load your application by setting `config.assets.initialize_on_precompile` to `false` in `config/application.rb`, though in that case templates cannot see application objects or methods. *Heroku requires this to be false.*
 
 `config.assets.initialize_on_precompile = false`
-
 
 ## Contributing
 
