@@ -1,7 +1,7 @@
 App.Authorization.Permissions =
   _perms:    {}
-  register: (name, klass) -> 
-    @_perms[name] = klass
+  register: (name, type) -> 
+    @_perms[name] = type
   
   get: (name, attrs) -> 
     @_perms[name].create(attrs)

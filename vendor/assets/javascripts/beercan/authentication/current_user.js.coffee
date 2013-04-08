@@ -1,6 +1,7 @@
 App.CurrentUserController = Ember.ObjectController.extend
   content: null
   currentUserPath: '/users/me'
+  userType: App.User
 
   isSignedIn: (->
     @get('content') != null
@@ -10,19 +11,15 @@ App.CurrentUserController = Ember.ObjectController.extend
   retrieveCurrentUser: ->
     controller = @
     Ember.$.getJSON(@currentUserPath, (data) ->
-      App.store.load(App.User, data)
+      App.store.load(@userType, data)
       var currentUser = App.store.find(data.id)
       controller.set 'content', currentUser
     )
-  
 
 # http://say26.com/using-rails-devise-with-ember-js
 Ember.Application.initializer
   name: 'currentUser'
 
   initialize: (container) ->
-    store = container.lookup('store:main')
-      user = App.User.find(object.id)
-      controller = container.lookup('controller:currentUser')  
-      container.typeInjection('controller', 'currentUser', 'controller:retrieveCurrentUser')
+    container.typeInjection('controller', 'currentUser', 'controller:currentUser')
 

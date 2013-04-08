@@ -9,8 +9,10 @@ Handlebars.registerHelper 'can', (permissionName, property, options) ->
 
   beerCan = App.BeerCan.create context, property, options
 
+  permissions = App.Authorization.Permissions
+
   # find & create the permission with the supplied attributes
-  permission = App.Authorization.Permissions.get permissionName, beerCan.attributes
+  permission = permissions.get permissionName, beerCan.attributes
 
   # ensure boundIf uses permission as context and not the view/controller
   # otherwise it looks for 'can' in the wrong place

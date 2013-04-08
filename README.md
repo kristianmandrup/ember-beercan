@@ -108,6 +108,33 @@ class UsersController
 end
 ```
 
+### App.Authentication.UserSession
+
+* signedIn (is the user signed in?)
+* signIn
+* signOut
+
+## App.Authorization.Authorizer
+
+`Autorizer.create(action: 'update', object: post).authorize`
+
+## App.Authorization.Permissions
+
+`App.Authorization.Permissions.register(name, type)`
+
+## App.UserSessionNewController
+
+`App.UserSessionNewController.signIn(email, password)`
+
+This can be used for simple (old school) email/password login. The server should generate an auth token on successful login, which is then communicate between client and server until it expires, which then requires a new login.
+
+## App.Routes.SigninMatcher
+
+`App.Routes.SigninMatcher.map(match)` can be used to add signin routes:
+
+* match('/signIn').to('userSessionNew')
+* match('/users/:user_id').to('user')
+
 ## Controllers
 
 * AuthorizationsController (subclass to have your control authorization enabled)
@@ -115,6 +142,7 @@ end
 * GuardedController
 
 The `TokensController` uses a `Tokener`. Currently tokeners are provided for Sorcery and Devise:
+
 * `SorceryTokener`
 * `DeviseTokener`
 
