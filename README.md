@@ -31,7 +31,7 @@ Or install it yourself as:
 
 ## Usage
 
-Add an `ApiUrl` hash with some Rails authorization info stored:
+Add an `ApiUrl` hash with some Rails authorization routes info stored:
 
 ```erb
 # routes/api_url.js.coffee.erb
@@ -43,13 +43,11 @@ App.Routes.ApiUrl = {
 };
 ```
 
-Also set up the following for currentUser functionality:
+We also need to have a `currentUser` method available on all controllers!
 
-```erb
-<%- if user_signed_in? %>
-  <meta name="current-user" content="<%= UserSerializer.new(current_user).to_json(root: false) %>" />
-<% end %>
-```
+For this we provide the `CurrentUserController` with `currentUser` functionality, made available in all controllers using the `Ember.Application.initializer` called 'currentUser'.
+
+Authorization should also be integrated with [pundit](https://github.com/elabs/pundit)
 
 ## Ember Auth toolset
 

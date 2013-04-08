@@ -1,8 +1,20 @@
+App.CurrentUserController = Ember.ObjectController.extend
+  content: null,
+
+  isSignedIn: (->
+    @get('content') != null
+  ).property('@content'),
+
+  # http://stackoverflow.com/questions/9618395/strategy-to-retrieve-the-current-user
+  retrieveCurrentUser: ->
+    var controller = @
+    Ember.$.getJSON('/users/me', (data) ->
+      App.store.load(App.User, data)
+      var currentUser = App.store.find(data.id)
+      controller.set 'content', currentUser
+    )
+
 # http://say26.com/using-rails-devise-with-ember-js
-
-# What we do here is create an instance of User and then put it into the content variable of CurrentUserController. We then perform typeInjection on all the controllers in our app to give them currentUser variable so that we don't need to set it manually.
-# Now, you can access currentUser in any template without needing to set it manually in your controller's needs:
-
 Ember.Application.initializer
   name: 'currentUser'
 
@@ -16,9 +28,3 @@ Ember.Application.initializer
       controller = container.lookup('controller:currentUser').set('content', user)
       container.typeInjection('controller', 'currentUser', 'controller:currentUser')
 
-
-
-App.CurrentUserController = Ember.ObjectController.extend
-  isSignedIn: (->
-    @get('content') != null
-  ).property('@content')
