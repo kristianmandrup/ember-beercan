@@ -286,7 +286,7 @@ class UserSerializer < ActiveModel::Serializer
   private
 
   def can_manage
-     Ability.new.can?(:manage, all)
+    Ability.new.can?(:manage, all)
   end
 
   def can_update
