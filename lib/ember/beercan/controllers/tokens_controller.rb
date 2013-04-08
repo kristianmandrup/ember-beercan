@@ -29,6 +29,12 @@ class TokensController < APIController
     render_msg 404, invalid_token_msg
   end
 
+  def me
+    render json: user_by(:token)
+  rescue 
+    render json: guest_user
+  end
+
   def self.tokener_for name
     define_method :tokener_class
       "#{name.to_s.camelize}Tokener".constantize
@@ -43,6 +49,10 @@ class TokensController < APIController
   end
 
   protected
+
+  def guest_user
+    User.respond_to?(:guest) ? User.guest : {}
+  end
 
   def retrieve_user
     user_by(:email)

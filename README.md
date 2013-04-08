@@ -43,23 +43,7 @@ App.Routes.ApiUrl = {
 };
 ```
 
-We also need to have a `currentUser` method available on all controllers!
-
-For this we provide the `CurrentUserController with `currentUser` functionality, made available in all controllers using the `Ember.Application.initializer` called 'currentUser'.
-
-Authorization should also be integrated with [pundit](https://github.com/elabs/pundit)
-
-Note: to set global app state, use this tip: https://github.com/emberjs/ember.js/issues/1780
-
-```javascript
-# fired no matter what route is hit on application launch.
-App.ApplicationRoute = Ember.Route.extend({
-  setupController: function(controller, model){
-    controller.loadCompanyName();
-    this._super(controller, model);
-  }
-});
-```
+Usually the `authorization_path` will point to `AuthorizationsController#show` and the `tokens_path` to `TokensController` `#create` and `#destroy` methods.
 
 ## Ember Auth toolset
 
@@ -75,7 +59,10 @@ Or alternatively include individual "modules"
 #= require beercan/authorization
 ```
 
-Add permissions:
+Or with more control: `#= require_tree beercan/authorization` or 
+`#= require beercan/authorization/authorizer`
+
+Now add permissions:
 
 ```javascript
 App.Permissions.register("createPost", App.Permission.extend({
@@ -91,16 +78,39 @@ App.Permissions.register("editPost", App.Permission.extend({
 }));
 ```
 
-You must also have a currentUser at `App.currentUser` for permissions to work.
-
 See [writing-a-helper-to-check-permissions-in-ember](http://livsey.org/blog/2012/10/16/writing-a-helper-to-check-permissions-in-ember-dot-js/) for more instructions.
+
+Alternatively use the `App.Authorization.Authorizer#authorize` method, which should call the `AuthorizationsController` on the server, and respond with the result of a can? check there, so that the server is responsible for authorization and has the rules there...
+
+This approach is sketched out here: [shelving-emberjs-was-authorization-in](http://avitevet.blogspot.com.es/2013/01/shelving-emberjs-was-authorization-in.html)
+
+You must also have a currentUser at `App.currentUser` for permissions to work.
+For this a `App.CurrentUserController` is included. On this controller you can set the `currentUserPath` property to the path of your server API that returns the current user.
+It might be useful to return a Guest user, in case no user is logged in.
+
+A `CurrentUserController` with `currentUser` functionality, is made available in all controllers using the `Ember.Application.initializer`, named 'currentUser'.
+
+The mixin module `BeerCan::FindMe` can be included in a `UsersController` on the server, to add the `me` method ('users/me' path). This method tries to respond with a User (Serialized as JSON), by calling `User.find_by token_hash` where token is assumed to be passed as a `:authenticity_token` (or similar) parameter from the client (using Ajax).
+
+You can customize the lookup-field used for the token on the user, by overriding the `token_hash` method like this (default field is `token:`)
+
+```ruby
+class UsersController
+  include BeerCan::FindMe
+
+  protected
+
+  def token_hash
+    {auth_token: authenticity_token}
+  end
+end
+```
 
 ## Controllers
 
 * AuthorizationsController (subclass to have your control authorization enabled)
 * TokensController (for managing auth tokens)
 * GuardedController
-
 
 The `TokensController` uses a `Tokener`. Currently tokeners are provided for Sorcery and Devise:
 * `SorceryTokener`
@@ -146,7 +156,14 @@ end
 
 Use doorkeeper to setup your API with OAuth protection :)
 
-BeerCan comes with a `GuardedController` you can subclass.
+BeerCan comes with a `GuardedController` you can subclass which include basic DoorKeeper functionality to return the current_user based on the doorkeeper token.
+
+Simply subclass `GuardedBaseController` for controllers you want guarded by doorkeeper!
+Then use the `doorkeeper_for` macro to customize for which actions etc. it should apply
+
+Default is for any xhr (AJAX) request received: 
+
+`doorkeeper_for :all, :if => lambda { request.xhr? }`
 
 First install doorkeeper:
 
@@ -178,9 +195,23 @@ Currently, the BeerCan coffeescript auth modules are not setup to use the `Guard
 
 See [railscast: securing an api](http://railscasts.com/episodes/352-securing-an-api?view=asciicast) for a walk-through of what is required...
 
-## Authentication lib integrations
+## Authentication lib integrations (future)
 
-Would also be nice to have support for: https://github.com/heartsentwined/ember-auth-rails
+Would be nice to have built-in support for: [ember-auth-rails](https://github.com/heartsentwined/ember-auth-rails) and [pundit](https://github.com/elabs/pundit)
+
+## Global app state
+
+Note: to set global app state, use this tip: https://github.com/emberjs/ember.js/issues/1780
+
+```javascript
+# fired no matter what route is hit on application launch.
+App.ApplicationRoute = Ember.Route.extend({
+  setupController: function(controller, model){
+    controller.loadCompanyName();
+    this._super(controller, model);
+  }
+});
+```
 
 ## Rails assets config
 
@@ -189,6 +220,7 @@ http://guides.rubyonrails.org/asset_pipeline.html
 For faster asset precompiles, you can partially load your application by setting `config.assets.initialize_on_precompile` to `false` in `config/application.rb`, though in that case templates cannot see application objects or methods. *Heroku requires this to be false.*
 
 `config.assets.initialize_on_precompile = false`
+
 
 ## Contributing
 
