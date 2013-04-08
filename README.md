@@ -84,7 +84,9 @@ Alternatively use the `App.Authorization.Authorizer#authorize` method, which sho
 
 This approach is sketched out here: [shelving-emberjs-was-authorization-in](http://avitevet.blogspot.com.es/2013/01/shelving-emberjs-was-authorization-in.html)
 
-You must also have a currentUser at `App.currentUser` for permissions to work.
+There are also some nice ideas presented in this [gist](https://gist.github.com/ivanvanderbyl/4560416) about how to integrate with *cancan* permissions.
+
+You must have a `currentUser` on the controller for permissions to work.
 For this a `App.CurrentUserController` is included. On this controller you can set the `currentUserPath` property to the path of your server API that returns the current user.
 It might be useful to return a Guest user, in case no user is logged in.
 
@@ -195,7 +197,7 @@ Currently, the BeerCan coffeescript auth modules are not setup to use the `Guard
 
 See [railscast: securing an api](http://railscasts.com/episodes/352-securing-an-api?view=asciicast) for a walk-through of what is required...
 
-## Authentication lib integrations (future)
+## Auth lib integrations (future)
 
 Would be nice to have built-in support for: [ember-auth-rails](https://github.com/heartsentwined/ember-auth-rails) and [pundit](https://github.com/elabs/pundit)
 
