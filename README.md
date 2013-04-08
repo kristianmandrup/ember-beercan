@@ -249,6 +249,57 @@ App.ApplicationRoute = Ember.Route.extend({
 });
 ```
 
+## User Serializer with authorization
+
+This approach might also be useful...
+
+https://gist.github.com/ivanvanderbyl/4560416
+
+```ruby
+class ApplicationController < ActionController::Base
+   helper_method :current_permission_json
+
+   delegate :can_update, :can_delete, :can_manage, to: :current_permission
+
+   def current_permission_json
+       UserSerializer.new([can_update, can_delete, can_manage], :scope => current_user.role, :root => false).to_json
+   end
+end
+
+class UserSerializer < ActiveModel::Serializer
+  attributes :can_update, :can_delete, :can_manage
+
+  def attributes
+    hash =  super
+    #if scope.admin?
+    if scope.role? :admin
+      can_manage
+    else
+      can_update
+    if user.role?(:author)
+      can_delete, Article do |article|
+        article.try(:user) == user
+      end
+    end       
+  end
+
+  private
+
+  def can_manage
+     Ability.new.can?(:manage, all)
+  end
+
+  def can_update
+    # `scope` is current_user
+    Ability.new.can?(:update, object)
+  end
+
+  def can_delete
+    Ability.new.can?(:delete, object)
+  end
+end
+```
+
 ## Rails assets config
 
 http://guides.rubyonrails.org/asset_pipeline.html
