@@ -43,6 +43,14 @@ App.Routes.ApiUrl = {
 };
 ```
 
+Also set up the following for currentUser functionality:
+
+```erb
+<%- if user_signed_in? %>
+  <meta name="current-user" content="<%= UserSerializer.new(current_user).to_json(root: false) %>" />
+<% end %>
+```
+
 ## Ember Auth toolset
 
 Simply add the following to your script manifest.
