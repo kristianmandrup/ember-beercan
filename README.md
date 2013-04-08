@@ -45,9 +45,21 @@ App.Routes.ApiUrl = {
 
 We also need to have a `currentUser` method available on all controllers!
 
-For this we provide the `CurrentUserController` with `currentUser` functionality, made available in all controllers using the `Ember.Application.initializer` called 'currentUser'.
+For this we provide the `CurrentUserController with `currentUser` functionality, made available in all controllers using the `Ember.Application.initializer` called 'currentUser'.
 
 Authorization should also be integrated with [pundit](https://github.com/elabs/pundit)
+
+Note: to set global app state, use this tip: https://github.com/emberjs/ember.js/issues/1780
+
+```javascript
+# fired no matter what route is hit on application launch.
+App.ApplicationRoute = Ember.Route.extend({
+  setupController: function(controller, model){
+    controller.loadCompanyName();
+    this._super(controller, model);
+  }
+});
+```
 
 ## Ember Auth toolset
 
