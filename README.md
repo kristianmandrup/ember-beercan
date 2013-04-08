@@ -255,50 +255,82 @@ This approach might also be useful...
 
 https://gist.github.com/ivanvanderbyl/4560416
 
+Based on: http://stackoverflow.com/questions/11660179/serialize-permissions-e-g-cancan-with-active-model-serializers
+
 ```ruby
 class ApplicationController < ActionController::Base
   helper_method :current_permission_json
 
-  delegate :can_update, :can_delete, :can_manage, to: :current_permission
+  serialization_scope :current_user
+
+  protected
+
+  # resource must return the current resource user tries to access
+  def current_permission
+    PermissionSerializer.new resource, :root => false
+  end
 
   def current_permission_json
-     UserSerializer.new([can_update, can_delete, can_manage], :scope => current_user.role, :root => false).to_json
+     current_permission.to_json
   end
 end
 
-class UserSerializer < ActiveModel::Serializer
+class PermissionSerializer < ActiveModel::Serializer
   attributes :can_update, :can_delete, :can_manage
 
   def attributes
-    hash =  super
-    #if scope.admin?
-    if scope.role? :admin
-      can_manage
-    else
-      can_update
-    if user.role?(:author)
-      can_delete, Article do |article|
-        article.try(:user) == user
-      end
-    end       
+    hash = super
+    hash.merge!(can_manage: can_manage, can_update: can_update, can_delete: can_delete)
+    hash.merge(special_permissions)
   end
 
   private
 
+  def special_permissions
+    return {} unless scope.role?(:author) && object.kind_of? Article    
+    {can_delete: object.try(:user) == user }
+  end
+
+  def ability
+    @ability ||= Ability.new(scope)
+  end
+
+  def can? *args
+    ability.can? *args
+  end
+
   def can_manage
-    Ability.new.can?(:manage, all)
+    can? :manage, all
   end
 
   def can_update
-    # `scope` is current_user
-    Ability.new.can?(:update, object)
+    can? :update, object
   end
 
   def can_delete
-    Ability.new.can?(:delete, object)
+    can? :delete, object
   end
 end
 ```
+
+And here a gem to achieve this effect: [active_model_serializers-cancan](https://github.com/GroupTalent/active_model_serializers-cancan)
+
+## active_model_serializers-cancan
+
+`hasOne` and `hasMany` serializer macros now support an additional property, `authorize`. Associations with this property set to true will be authorized and filtered via CanCan. For example:
+
+```ruby
+class PostSerializer < ActiveModel::Serializer
+  attributes :title, :content
+
+  has_one :author, authorize: true
+  has_many :comments, authorize: true
+end
+```
+
+Serializers now also have access to the same helpers as controllers, namely `current_ability`, `can?`, and `cannot?`
+
+i.e you can use similar logic to the example for `PermissionSerializer`.
 
 ## Rails assets config
 
